@@ -52,10 +52,17 @@ for(i in 1:length(1:nrow(Data))){
         Data$HGain[i] <- Data$Height[i]}}}
 
 # Calculate stem gain since previous trim
+# Subtract new total stems from previous baseline (previous total minus stems trimmed)
+# Accounts for fact that main stem cannot count as extra stem
+# For untrimmed plants, just use current minus previous; will be zero unless new stem pops up
 Data$SGain <- rep(0, nrow(Data))
 for(i in 1:length(1:nrow(Data))){
   if(Data$Week[i] != 0){
-    Data$SGain[i] <- Data$NStems[i] - Data$NStems[i - 1]}}
+    if(Data$NStems[i - 1] == Data$NStemsT[i - 1]){
+      ns_prev <- 1} else {ns_prev <- Data$NStems[i - 1] - Data$NStemsT[i - 1]}
+    Data$SGain[i] <- Data$NStems[i] - ns_prev
+    if(Data$Treatment[i] == 1){
+      Data$SGain[i] <- Data$NStems[i] - Data$NStems[i - 1]}}}
 
 # Select columns used for analyses  
 Data %>% select(Row, Group, Plant, Species, Warmed, Treatment, DM_t, Week, Height,
@@ -77,7 +84,7 @@ Data_Alt <- drop_na(Data_Alt, Row)
 
 # Same as above, but split into before and after winter census gap
 Data_Alt_1 <- data.frame(matrix(ncol = 9, nrow = 0))
-Data_Alt_2 <- data.frame(matrix(ncol = 9, nrow = 0))
+Data_Alt_2 <- Data_Alt_1
 names(Data_Alt_1) <- names(Data_Alt)
 names(Data_Alt_2) <- names(Data_Alt)
 Data_sub <- subset(Data, Week <= 30)
@@ -98,4 +105,8 @@ for(i in 1:nrow(Data_sub)){
   if(Data_sub$Week[i] == 50){Data_Alt_2[i, 9] <- 0} else {Data_Alt_2[i, 9] <- 1}}
 Data_Alt_1 <- drop_na(Data_Alt_1, Row)
 Data_Alt_2 <- drop_na(Data_Alt_2, Row)
+
+# Remove temporary variables since they will no longer be used
+remove(i, ns_prev, Data_sub)
+
 
