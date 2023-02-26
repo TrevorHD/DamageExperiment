@@ -61,3 +61,41 @@ for(i in 1:length(1:nrow(Data))){
 Data %>% select(Row, Group, Plant, Species, Warmed, Treatment, DM_t, Week, Height,
                 HGain, Buds, Heads, NStems, SGain) -> Data
 
+# Construct concise representation of original dataset
+# ToD indicates time of death
+# Cens indicates censor status (1 = dead, 0 = censored and survived until end)
+Data_Alt <- data.frame(matrix(ncol = 9, nrow = 0))
+names(Data_Alt) <- c("Row", "Group", "Plant", "species", "Warmed", "Treatment", "DM_t", "ToD", "Cens")
+for(i in 1:nrow(Data)){
+  if(i < nrow(Data)){
+    if(Data$Week[i] >= Data$Week[i + 1]){
+      Data_Alt[i, 1:8] <- Data[i, 1:8]}}
+  if(i == nrow(Data)){
+    Data_Alt[i, 1:8] <- Data[i, 1:8]}
+  if(Data$Week[i] == 65){Data_Alt[i, 9] <- 0} else {Data_Alt[i, 9] <- 1}}
+Data_Alt <- drop_na(Data_Alt, Row)
+
+# Same as above, but split into before and after winter census gap
+Data_Alt_1 <- data.frame(matrix(ncol = 9, nrow = 0))
+Data_Alt_2 <- data.frame(matrix(ncol = 9, nrow = 0))
+names(Data_Alt_1) <- names(Data_Alt)
+names(Data_Alt_2) <- names(Data_Alt)
+Data_sub <- subset(Data, Week <= 30)
+for(i in 1:nrow(Data_sub)){
+  if(i < nrow(Data_sub)){
+    if(Data_sub$Week[i] >= Data_sub$Week[i + 1]){
+      Data_Alt_1[i, 1:8] <- Data_sub[i, 1:8]}}
+  if(i == nrow(Data_sub)){
+    Data_Alt_1[i, 1:8] <- Data_sub[i, 1:8]}
+  if(Data_sub$Week[i] == 30){Data_Alt_1[i, 9] <- 0} else {Data_Alt_1[i, 9] <- 1}}
+Data_sub <- subset(Data, Week >= 50)
+for(i in 1:nrow(Data_sub)){
+  if(i < nrow(Data_sub)){
+    if(Data_sub$Week[i] >= Data_sub$Week[i + 1]){
+      Data_Alt_2[i, 1:8] <- Data_sub[i, 1:8]}}
+  if(i == nrow(Data_sub)){
+    Data_Alt_2[i, 1:8] <- Data_sub[i, 1:8]}
+  if(Data_sub$Week[i] == 50){Data_Alt_2[i, 9] <- 0} else {Data_Alt_2[i, 9] <- 1}}
+Data_Alt_1 <- drop_na(Data_Alt_1, Row)
+Data_Alt_2 <- drop_na(Data_Alt_2, Row)
+
