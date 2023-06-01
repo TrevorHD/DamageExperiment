@@ -180,27 +180,113 @@ test %>%
 
 
 
+##### [F1] Plot survival curves by trimming treatment -----------------------------------------------------
+
+# Generate Kaplan-Meier survival curves for comparison by treatment
+# Note: not using the full time horizon for CN because most of them died before winter
+km_CN_NW <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier",
+                    data = subset(Data_Alt_1, Species == "CN" & Warmed == 0))
+km_CN_W <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier",
+                   data = subset(Data_Alt_1, Species == "CN" & Warmed == 1))
+km_CA_NW <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier",
+                    data = subset(Data_Alt, Species == "CA" & Warmed == 0))
+km_CA_W <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier",
+                   data = subset(Data_Alt, Species == "CA" & Warmed == 1))
+
+# Function to plot survival curves
+km.plot <- function(km_mod, bottom, left, atext){
+  ltypes <- c("solid", "3333", "2323", "1212")
+  colours <- c("black", "purple", "green", "orange")
+  par(cex.axis = 0.38, cex.lab = 0.5, tcl = -0.15)
+  if(bottom == FALSE & left == TRUE){
+    par(mar = c(0, 0.8, 0.15, 0.1))
+    plot(km_mod, xlim = c(0, 30), xaxt = "n", ylab = "Probability of Survival",
+         mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
+    text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(bottom == TRUE & left == TRUE){
+    par(mar = c(1, 0.8, 0, 0.1))
+    plot(km_mod, xlim = c(0, 30), xlab = "Weeks", ylab = "Probability of Survival", 
+         mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
+    text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(bottom == FALSE & left == FALSE){
+    par(mar = c(0, 0.1, 0.15, 0.3))
+    plot(km_mod, xaxt = "n", yaxt = "n",
+         mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
+    text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(bottom == TRUE & left == FALSE){
+    par(mar = c(1, 0.1, 0, 0.3))
+    plot(km_mod, xlab = "Weeks", yaxt = "n",
+         mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
+    text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}}
+
+# Prepare graphics device
+tiff(filename = "Figure 1.tif", width = 2700, height = 2000, units = "px", res = 800, compression = "lzw")
+
+# Create blank page
+grid.newpage()
+plot.new()
+
+# Set grid layout and activate it
+gly <- grid.layout(2000, 2700)
+pushViewport(viewport(layout = gly))
+
+# Plot unwarmed CN
+pushViewport(vp = viewport(layout.pos.row = 25:925, layout.pos.col = 50:975))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot(km_CN_NW, bottom = FALSE, left = TRUE, atext = "CN Unwarmed"))
+popViewport()
+
+# Plot warmed CN
+pushViewport(vp = viewport(layout.pos.row = 975:1975, layout.pos.col = 50:975))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot(km_CN_W, bottom = TRUE, left = TRUE, atext = "CN Warmed"))
+popViewport()
+
+# Plot unwarmed CA
+pushViewport(vp = viewport(layout.pos.row = 25:925, layout.pos.col = 1000:2675))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot(km_CA_NW, bottom = FALSE, left = FALSE, atext = "CA Unwarmed"))
+popViewport()
+
+# Plot warmed CA
+pushViewport(vp = viewport(layout.pos.row = 975:1975, layout.pos.col = 1000:2675))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot(km_CA_W, bottom = TRUE, left = FALSE, atext = "CA Warmed"))
+popViewport()
+
+# Create legend
+grid.text(label = c("Control", "Trim to 10 cm", "Trim to 5 cm", "Trim to Ground"),
+          x = rep(0.908, 4), y = seq(0.913, 0.840, length.out = 4),
+          hjust = 1, gp = gpar(cex = 0.35))
+grid.segments(x0 = rep(0.920, 4), y0 = seq(0.913, 0.840, length.out = 4),
+              x1 = rep(0.956, 4), y1 = seq(0.913, 0.840, length.out = 4),
+              gp = gpar(lty = c(1, 5, 2, 3), lty = c("solid", "3333", "2323", "1212"), 
+                        col = c("black", "purple", "green", "orange")))
+
+# Deactivate grid layout; finalise graphics save
+popViewport()
+dev.off()
 
 
 
-km1 <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier", data = subset(Data_Alt_1, Species == "CN" & Warmed == 0))
-km2 <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier", data = subset(Data_Alt_1, Species == "CN" & Warmed == 1))
-plot(km1, xlab = "Weeks", ylab = "Probability of Survival", lty = c(1, 5, 2, 3), lwd = 2,
-     col = c("black", "purple", "green", "orange"))
-legend("topright", legend = c ("Control", "Trimmed to 10 cm", "Trimmed to 5 cm", "Trimmed to Ground"),
-       lty = c(1, 5, 2, 3), col = c("black", "purple", "green", "orange"), bty = "n")
-plot(km2, xlab = "Weeks", ylab = "Probability of Survival", lty = c(1, 5, 2, 3), lwd = 2,
-     col = c("black", "purple", "green", "orange"))
 
 
-km3 <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier", data = subset(Data_Alt, Species == "CA" & Warmed == 0))
-km4 <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier", data = subset(Data_Alt, Species == "CA" & Warmed == 1))
-plot(km3, xlab = "Weeks", ylab = "Probability of Survival", col = c("red", "blue", "green", "purple"))
-legend ("topright", legend = c ("No Trim", "10 cm Trim", "5 Cm Trim", "Ground Trim"),
-        fill = c("red", "blue", "green", "purple"), bty = "n")
-plot(km4, xlab = "Weeks", ylab = "Probability of Survival", col = c("red", "blue", "green", "purple"))
-legend ("topright", legend = c ("No Trim", "10 cm Trim", "5 Cm Trim", "Ground Trim"),
-        fill = c("red", "blue", "green", "purple"), bty = "n")
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 km5 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier", data = subset(Data_Alt_1, Species == "CN" & Treatment == 1))
