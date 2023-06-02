@@ -166,3 +166,49 @@ km.plot <- function(km_mod, bottom, left, atext){
     mtext(side = 1, line = 0.20, "Weeks", cex = 0.5)
     text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}}
 
+# Function to plot survival curves comparing warming treatments
+km.plot2 <- function(km_mod, row, left, atext){
+  ltypes <- c("solid", "3333")
+  colours <- c("blue", "red")
+  par(cex.axis = 0.38, cex.lab = 0.5, tcl = -0.15)
+  if(row == 1 & left == TRUE){
+    par(mar = c(0, 1, 0.15, 0.1))
+    plot(km_mod, xlim = c(0, 30), yaxt = "n", xaxt = "n",
+         mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
+    axis(2, at = seq(0, 1, by = 0.2), mgp = c(0.5, 0.05, 0))
+    mtext(side = 2, line = 0.53, "Probability of Survival", cex = 0.5)
+    text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if((row == 2 | row == 3) & left == TRUE){
+    par(mar = c(0, 1, 0.15, 0.1))
+    plot(km_mod, xlim = c(0, 30), yaxt = "n", xaxt = "n",
+         mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
+    axis(2, at = seq(0, 1, by = 0.2), mgp = c(0.5, 0.05, 0))
+    mtext(side = 2, line = 0.53, "Probability of Survival", cex = 0.5)
+    text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(row == 4 & left == TRUE){
+    par(mar = c(1, 1, 0, 0.1))
+    plot(km_mod, xlim = c(0, 30), yaxt = "n", xlab = "Weeks", 
+         mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
+    axis(2, at = seq(0, 1, by = 0.2), mgp = c(0.5, 0.05, 0))
+    mtext(side = 2, line = 0.53, "Probability of Survival", cex = 0.5)
+    text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(row == 1 & left == FALSE){
+    par(mar = c(0, 0.1, 0.15, 0.3))
+    plot(km_mod, xaxt = "n", yaxt = "n",
+         lwd = 1.1, lty = ltypes, col = colours)
+    text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if((row == 2 | row == 3) & left == FALSE){
+    par(mar = c(0, 0.1, 0.15, 0.3))
+    plot(km_mod, xaxt = "n", yaxt = "n",
+         lwd = 1.1, lty = ltypes, col = colours)
+    text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(row == 4 & left == FALSE){
+    par(mar = c(1, 0.1, 0, 0.3))
+    plot(km_mod, xaxt = "n", yaxt = "n", xlim = c(0, 65),
+         lwd = 1.1, lty = ltypes, col = colours)
+    axis(1, at = seq(0, 65, by = 5), mgp = c(0.2, -0.3, 0))
+    mtext(side = 1, line = 0.20, "Weeks", cex = 0.5)
+    text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}}
+
+
+legend ("topright", legend = c("Unwarmed", "Warmed"), fill = c("blue", "red"), bty = "n")

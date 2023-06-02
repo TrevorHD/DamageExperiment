@@ -52,3 +52,89 @@ grid.segments(x0 = rep(0.920, 4), y0 = seq(0.913, 0.840, length.out = 4),
 popViewport()
 dev.off()
 
+
+
+
+
+##### [F2] Plot survival curves by trimming treatment -----------------------------------------------------
+
+# Prepare graphics device
+tiff(filename = "Figure 2.tif", width = 2700, height = 3900, units = "px", res = 800, compression = "lzw")
+
+# Create blank page
+grid.newpage()
+plot.new()
+
+# Set grid layout and activate it
+gly <- grid.layout(4000, 2700)
+pushViewport(viewport(layout = gly))
+
+# Plot CN Treatment 1
+pushViewport(vp = viewport(layout.pos.row = 25:925, layout.pos.col = 50:975))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot2(km_CN_t1, row = 1, left = TRUE, atext = "CN Control"))
+popViewport()
+
+# Plot CN Treatment 2
+pushViewport(vp = viewport(layout.pos.row = 960:1860, layout.pos.col = 50:975))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot2(km_CN_t2, row = 2, left = TRUE, atext = "CN Trim to 10 cm"))
+popViewport()
+
+# Plot CN Treatment 3
+pushViewport(vp = viewport(layout.pos.row = 1910:2810, layout.pos.col = 50:975))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot2(km_CN_t3, row = 3, left = TRUE, atext = "CN Trim to 5 cm"))
+popViewport()
+
+# Plot CN Treatment 4
+pushViewport(vp = viewport(layout.pos.row = 2875:3875, layout.pos.col = 50:975))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot2(km_CN_t4, row = 4, left = TRUE, atext = "CN Trim to Ground"))
+popViewport()
+
+# Plot CA Treatment 1
+pushViewport(vp = viewport(layout.pos.row = 25:925, layout.pos.col = 1000:2675))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot2(km_CA_t1, row = 1, left = FALSE, atext = "CA Control"))
+popViewport()
+
+# Plot CA Treatment 2
+pushViewport(vp = viewport(layout.pos.row = 960:1860, layout.pos.col = 1000:2675))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot2(km_CA_t2, row = 2, left = FALSE, atext = "CA Trim to 10 cm"))
+popViewport()
+
+# Plot CA Treatment 3
+pushViewport(vp = viewport(layout.pos.row = 1910:2810, layout.pos.col = 1000:2675))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot2(km_CA_t3, row = 3, left = FALSE, atext = "CA Trim to 5 cm"))
+popViewport()
+
+# Plot CA Treatment 4
+pushViewport(vp = viewport(layout.pos.row = 2875:3875, layout.pos.col = 1000:2675))
+par(fig = gridFIG())
+par(new = TRUE)
+print(km.plot2(km_CA_t4, row = 4, left = FALSE, atext = "CA Trim to Ground"))
+popViewport()
+
+# Create legend
+grid.text(label = c("Unwarmed", "Warmed"),
+          x = rep(0.908, 2), y = c(0.950, 0.937),
+          hjust = 1, gp = gpar(cex = 0.35))
+grid.segments(x0 = rep(0.920, 2), y0 = c(0.950, 0.937),
+              x1 = rep(0.956, 2), y1 = c(0.950, 0.937),
+              gp = gpar(lty = c(1, 5, 2, 3), lty = c("solid", "3333"), 
+                        col = c("blue", "red")))
+
+# Deactivate grid layout; finalise graphics save
+popViewport()
+dev.off()
+

@@ -13,30 +13,22 @@ km_CA_W <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier",
 
 # Generate Kaplan-Meier survival curves for comparison by warming treatment [WIP]
 # Note: not using the full time horizon for CN because most of them died before winter
-km5 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier", data = subset(Data_Alt_1, Species == "CN" & Treatment == 1))
-km6 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier", data = subset(Data_Alt_1, Species == "CN" & Treatment == 2))
-km7 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier", data = subset(Data_Alt_1, Species == "CN" & Treatment == 3))
-km8 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier", data = subset(Data_Alt_1, Species == "CN" & Treatment == 4))
-plot(km5, xlab = "Weeks", ylab = "Probability of Survival", col = c("blue", "red"))
-legend ("topright", legend = c("Unwarmed", "Warmed"), fill = c("blue", "red"), bty = "n")
-plot(km6, xlab = "Weeks", ylab = "Probability of Survival", col = c("blue", "red"))
-legend ("topright", legend = c("Unwarmed", "Warmed"), fill = c("blue", "red"), bty = "n")
-plot(km7, xlab = "Weeks", ylab = "Probability of Survival", col = c("blue", "red"))
-legend ("topright", legend = c("Unwarmed", "Warmed"), fill = c("blue", "red"), bty = "n")
-plot(km8, xlab = "Weeks", ylab = "Probability of Survival", col = c("blue", "red"))
-legend ("topright", legend = c("Unwarmed", "Warmed"), fill = c("blue", "red"), bty = "n")
-km9 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier", data = subset(Data_Alt, Species == "CA" & Treatment == 1))
-km10 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier", data = subset(Data_Alt, Species == "CA" & Treatment == 2))
-km11 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier", data = subset(Data_Alt, Species == "CA" & Treatment == 3))
-km12 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier", data = subset(Data_Alt, Species == "CA" & Treatment == 4))
-plot(km9, xlab = "Weeks", ylab = "Probability of Survival", col = c("blue", "red"))
-legend ("topright", legend = c("Unwarmed", "Warmed"), fill = c("blue", "red"), bty = "n")
-plot(km10, xlab = "Weeks", ylab = "Probability of Survival", col = c("blue", "red"))
-legend ("topright", legend = c("Unwarmed", "Warmed"), fill = c("blue", "red"), bty = "n")
-plot(km11, xlab = "Weeks", ylab = "Probability of Survival", col = c("blue", "red"))
-legend ("topright", legend = c("Unwarmed", "Warmed"), fill = c("blue", "red"), bty = "n")
-plot(km12, xlab = "Weeks", ylab = "Probability of Survival", col = c("blue", "red"))
-legend ("topright", legend = c("Unwarmed", "Warmed"), fill = c("blue", "red"), bty = "n")
+km_CN_t1 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
+                    data = subset(Data_Alt_1, Species == "CN" & Treatment == 1))
+km_CN_t2 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
+                    data = subset(Data_Alt_1, Species == "CN" & Treatment == 2))
+km_CN_t3 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
+                    data = subset(Data_Alt_1, Species == "CN" & Treatment == 3))
+km_CN_t4 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
+                    data = subset(Data_Alt_1, Species == "CN" & Treatment == 4))
+km_CA_t1 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
+                    data = subset(Data_Alt, Species == "CA" & Treatment == 1))
+km_CA_t2 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
+                    data = subset(Data_Alt, Species == "CA" & Treatment == 2))
+km_CA_t3 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
+                    data = subset(Data_Alt, Species == "CA" & Treatment == 3))
+km_CA_t4 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
+                    data = subset(Data_Alt, Species == "CA" & Treatment == 4))
 
 
 
