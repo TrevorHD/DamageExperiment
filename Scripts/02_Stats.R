@@ -11,7 +11,7 @@ km_CA_NW <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier",
 km_CA_W <- survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier",
                    data = subset(Data_Alt, Species == "CA" & Warmed == 1))
 
-# Generate Kaplan-Meier survival curves for comparison by warming treatment [WIP]
+# Generate Kaplan-Meier survival curves for comparison by warming treatment
 # Note: not using the full time horizon for CN because most of them died before winter
 km_CN_t1 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
                     data = subset(Data_Alt_1, Species == "CN" & Treatment == 1))
@@ -34,19 +34,56 @@ km_CA_t4 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
 
 
 
-##### Fit growth models [WIP] -----------------------------------------------------------------------------
+##### Fit survival regressions ----------------------------------------------------------------------------
 
 # Note: figure out what to do with the ToD>0 bit
 Surv1_CN <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + DM_t,
                     data = subset(Data_Alt, Species == "CN" & ToD > 0))
-summary(Surv1_CN)
-AIC(Surv1_CN)
 
-# note: figure out what to do with the ToD>0 bit
+# Note: figure out what to do with the ToD>0 bit
+Surv2_CN <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment)
+                    + factor(Warmed):factor(Treatment) + DM_t,
+                    data = subset(Data_Alt, Species == "CN" & ToD > 0))
+
+# View model results
+summary(Surv1_CN)
+summary(Surv2_CN)
+AIC(Surv1_CN)
+AIC(Surv2_CN)
+
+# In absence of warming, trimming significantly decreased survival time (excl. trt 3)
+# For untrimmed individuals, warming significantly decreased survival time (accelerated life cycle?)
+# For trimmed individuals, warming generally reduced the negative effects on lifespan from trimming
+
+# Fit survival model to CA, using initial diameter as covariate
 Surv1_CA <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + DM_t,
-                    data = subset(Data_Alt, Species == "CA" & ToD > 0))
+                    data = subset(Data_Alt, Species == "CA"))
+
+
+# Same as above, but include interaction
+Surv2_CA <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) +
+                      factor(Warmed):factor(Treatment) + DM_t,
+                    data = subset(Data_Alt, Species == "CA"))
+
+# View model results
+# AIC is hardly any lower when adding interaction, adds significant complexity to model
 summary(Surv1_CA)
+summary(Surv2_CA)
 AIC(Surv1_CA)
+AIC(Surv2_CA)
+
+# In absence of warming, only the trim to ground significantly decreased survival time
+# For untrimmed individuals, warming decreased survival time (accelerated life cycle?) - not significant
+# For trimmed individuals, warming generally reduced the negative effects on lifespan from trimming
+# Last part above not significant, except for TRT 2
+
+# Scale less than 1 in all models; indicates that risk of death decreases over time
+
+
+
+
+
+##### Fit growth models [WIP] -----------------------------------------------------------------------------
 
 # Models for regrowth
 mod1 <- lm(HGain ~ factor(Warmed) + factor(Treatment) + DM_t, data = subset(Data_TA, Species == "CN"))

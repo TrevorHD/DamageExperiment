@@ -210,5 +210,3 @@ km.plot2 <- function(km_mod, row, left, atext){
     mtext(side = 1, line = 0.20, "Weeks", cex = 0.5)
     text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}}
 
-
-legend ("topright", legend = c("Unwarmed", "Warmed"), fill = c("blue", "red"), bty = "n")
