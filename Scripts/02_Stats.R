@@ -37,12 +37,12 @@ km_CA_t4 <- survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
 ##### Fit survival regressions ----------------------------------------------------------------------------
 
 # Note: figure out what to do with the ToD>0 bit
-Surv1_CN <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + DM_t,
+Surv1_CN <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + scale(DM_t),
                     data = subset(Data_Alt, Species == "CN" & ToD > 0))
 
 # Note: figure out what to do with the ToD>0 bit
 Surv2_CN <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment)
-                    + factor(Warmed):factor(Treatment) + DM_t,
+                    + factor(Warmed):factor(Treatment) + scale(DM_t),
                     data = subset(Data_Alt, Species == "CN" & ToD > 0))
 
 # View model results
@@ -56,13 +56,13 @@ AIC(Surv2_CN)
 # For trimmed individuals, warming generally reduced the negative effects on lifespan from trimming
 
 # Fit survival model to CA, using initial diameter as covariate
-Surv1_CA <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + DM_t,
+Surv1_CA <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + scale(DM_t),
                     data = subset(Data_Alt, Species == "CA"))
 
 
 # Same as above, but include interaction
 Surv2_CA <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) +
-                      factor(Warmed):factor(Treatment) + DM_t,
+                      factor(Warmed):factor(Treatment) + scale(DM_t),
                     data = subset(Data_Alt, Species == "CA"))
 
 # View model results
@@ -95,6 +95,14 @@ summary(mod2)
 mod1 <- lm(SGain ~ factor(Warmed) + factor(Treatment) + DM_t, data = subset(Data_TA, Species == "CN"))
 summary(mod1)
 mod2 <- lm(SGain ~ factor(Warmed) + factor(Treatment) + DM_t, data = subset(Data_TA, Species == "CA"))
+summary(mod2)
+
+# Models for reproduction
+# Originally wanted to do separate models for probability of flowering
+# And another model for buds for individuals that did reproduce
+mod1 <- lm(Total ~ factor(Warmed) + factor(Treatment) + factor(Warmed):factor(Treatment) + DM_t, data = subset(Data_R, Species == "CN"))
+summary(mod1)
+mod2 <- lm(Total ~ factor(Warmed) + factor(Treatment) + factor(Warmed):factor(Treatment) + DM_t, data = subset(Data_R, Species == "CA"))
 summary(mod2)
 
 # Survival analysis

@@ -106,15 +106,14 @@ for(i in 1:nrow(Data_sub)){
 Data_Alt_1 <- drop_na(Data_Alt_1, Row)
 Data_Alt_2 <- drop_na(Data_Alt_2, Row)
 
-# Remove temporary variables since they will no longer be used
-remove(i, ns_prev, Data_sub)
-
-# Construct dataframes used in growth models [WIP]
+# Construct dataframe for use in growth model
 Data %>% 
   group_by(Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
   summarise(HG_TA = mean(HGain),
             SG_TA = mean(SGain)) -> Data_TA
 names(Data_TA) <- names(Data)[c(1:7, 10, 14)]
+
+# Same as above, but split into before and after winter census gap
 Data %>% 
   filter(Week <= 30) %>% 
   group_by(Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
@@ -127,6 +126,16 @@ Data %>%
   summarise(HG_TA = mean(HGain),
             SG_TA = mean(SGain)) -> Data_TA_2
 names(Data_TA_2) <- names(Data)[c(1:7, 10, 14)]
+
+# Construct dataframe for use in reproduction model
+Data %>% 
+  group_by(Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
+  summarise(Buds = max(Buds),
+            Heads = max(Heads),
+            Total = Buds + Heads) -> Data_R
+
+# Remove temporary variables since they will no longer be used
+remove(i, ns_prev, Data_sub)
 
 
 
