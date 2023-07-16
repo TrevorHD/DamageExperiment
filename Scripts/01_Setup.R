@@ -5,6 +5,7 @@ library(tidyverse)
 library(grid)
 library(gridBase)
 library(lme4)
+library(lmerTest)
 library(survival)
 library(sjPlot)
 library(sjmisc)
@@ -82,7 +83,13 @@ for(i in 1:nrow(Data)){
   if(Data$Week[i] == 65){Data_Alt[i, 9] <- 0} else {Data_Alt[i, 9] <- 1}}
 Data_Alt <- drop_na(Data_Alt, Row)
 
+# Fix data issue with single observation where time of death is listed as week zero
+# This is likely a data entry error and should be week one
+Data_Alt$ToD[Data_Alt$ToD == 0] <- 1
+
 # Same as above, but split into before and after winter census gap
+# Keeping this code just in case, but it is likely not necessary
+# 
 Data_Alt_1 <- data.frame(matrix(ncol = 9, nrow = 0))
 Data_Alt_2 <- Data_Alt_1
 names(Data_Alt_1) <- names(Data_Alt)
@@ -106,30 +113,17 @@ for(i in 1:nrow(Data_sub)){
 Data_Alt_1 <- drop_na(Data_Alt_1, Row)
 Data_Alt_2 <- drop_na(Data_Alt_2, Row)
 
-# Construct dataframe for use in growth model
+# Construct dataframe for use in growth model, with time-averaged regrowth
 Data %>% 
-  group_by(Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
-  summarise(HG_TA = mean(HGain),
-            SG_TA = mean(SGain)) -> Data_TA
-names(Data_TA) <- names(Data)[c(1:7, 10, 14)]
-
-# Same as above, but split into before and after winter census gap
-Data %>% 
-  filter(Week <= 30) %>% 
-  group_by(Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
-  summarise(HG_TA = mean(HGain),
-            SG_TA = mean(SGain)) -> Data_TA_1
-names(Data_TA_1) <- names(Data)[c(1:7, 10, 14)]
-Data %>% 
-  filter(Week >= 50) %>% 
-  group_by(Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
-  summarise(HG_TA = mean(HGain),
-            SG_TA = mean(SGain)) -> Data_TA_2
-names(Data_TA_2) <- names(Data)[c(1:7, 10, 14)]
+  mutate(Clust = paste0(Row, Group)) %>%
+  group_by(Clust, Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
+  summarise(HGain = mean(HGain),
+            SGain = mean(SGain)) -> Data_TA
 
 # Construct dataframe for use in reproduction model
 Data %>% 
-  group_by(Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
+  mutate(Clust = paste0(Row, Group)) %>%
+  group_by(Clust, Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
   summarise(Buds = max(Buds),
             Heads = max(Heads),
             Total = Buds + Heads) -> Data_R
