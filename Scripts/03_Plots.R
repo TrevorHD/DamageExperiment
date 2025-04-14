@@ -15,28 +15,32 @@ pushViewport(viewport(layout = gly))
 pushViewport(vp = viewport(layout.pos.row = 25:925, layout.pos.col = 50:975))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot(km_CN_NW, bottom = FALSE, left = TRUE, atext = "CN Unwarmed"))
+print(km.plot(km.curve(comp = "trim", subs = 0, species = "CN", Data_Alt_Y1),
+              bottom = FALSE, left = TRUE, atext = "CN Unwarmed"))
 popViewport()
 
 # Plot warmed CN
 pushViewport(vp = viewport(layout.pos.row = 975:1975, layout.pos.col = 50:975))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot(km_CN_W, bottom = TRUE, left = TRUE, atext = "CN Warmed"))
+print(km.plot(km.curve(comp = "trim", subs = 1, species = "CN", Data_Alt_Y1),
+              bottom = TRUE, left = TRUE, atext = "CN Warmed"))
 popViewport()
 
 # Plot unwarmed CA
 pushViewport(vp = viewport(layout.pos.row = 25:925, layout.pos.col = 1000:2675))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot(km_CA_NW, bottom = FALSE, left = FALSE, atext = "CA Unwarmed"))
+print(km.plot(km.curve(comp = "trim", subs = 0, species = "CA", Data_Alt),
+              bottom = FALSE, left = FALSE, atext = "CA Unwarmed"))
 popViewport()
 
 # Plot warmed CA
 pushViewport(vp = viewport(layout.pos.row = 975:1975, layout.pos.col = 1000:2675))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot(km_CA_W, bottom = TRUE, left = FALSE, atext = "CA Warmed"))
+print(km.plot(km.curve(comp = "trim", subs = 1, species = "CA", Data_Alt),
+              bottom = TRUE, left = FALSE, atext = "CA Warmed"))
 popViewport()
 
 # Create legend
@@ -73,56 +77,64 @@ pushViewport(viewport(layout = gly))
 pushViewport(vp = viewport(layout.pos.row = 25:925, layout.pos.col = 50:975))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot2(km_CN_t1, row = 1, left = TRUE, atext = "CN Control"))
+print(km.plot2(km.curve(comp = "warm", subs = 1, species = "CN", Data_Alt_Y1),
+               row = 1, left = TRUE, atext = "CN Control"))
 popViewport()
 
 # Plot CN Treatment 2
 pushViewport(vp = viewport(layout.pos.row = 960:1860, layout.pos.col = 50:975))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot2(km_CN_t2, row = 2, left = TRUE, atext = "CN Trim to 10 cm"))
+print(km.plot2(km.curve(comp = "warm", subs = 2, species = "CN", Data_Alt_Y1),
+               row = 2, left = TRUE, atext = "CN Trim to 10 cm"))
 popViewport()
 
 # Plot CN Treatment 3
 pushViewport(vp = viewport(layout.pos.row = 1910:2810, layout.pos.col = 50:975))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot2(km_CN_t3, row = 3, left = TRUE, atext = "CN Trim to 5 cm"))
+print(km.plot2(km.curve(comp = "warm", subs = 3, species = "CN", Data_Alt_Y1),
+               row = 3, left = TRUE, atext = "CN Trim to 5 cm"))
 popViewport()
 
 # Plot CN Treatment 4
 pushViewport(vp = viewport(layout.pos.row = 2875:3875, layout.pos.col = 50:975))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot2(km_CN_t4, row = 4, left = TRUE, atext = "CN Trim to Ground"))
+print(km.plot2(km.curve(comp = "warm", subs = 4, species = "CN", Data_Alt_Y1),
+               row = 4, left = TRUE, atext = "CN Trim to Ground"))
 popViewport()
 
 # Plot CA Treatment 1
 pushViewport(vp = viewport(layout.pos.row = 25:925, layout.pos.col = 1000:2675))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot2(km_CA_t1, row = 1, left = FALSE, atext = "CA Control"))
+print(km.plot2(km.curve(comp = "warm", subs = 1, species = "CA", Data_Alt),
+               row = 1, left = FALSE, atext = "CA Control"))
 popViewport()
 
 # Plot CA Treatment 2
 pushViewport(vp = viewport(layout.pos.row = 960:1860, layout.pos.col = 1000:2675))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot2(km_CA_t2, row = 2, left = FALSE, atext = "CA Trim to 10 cm"))
+print(km.plot2(km.curve(comp = "warm", subs = 2, species = "CA", Data_Alt),
+               row = 2, left = FALSE, atext = "CA Trim to 10 cm"))
 popViewport()
 
 # Plot CA Treatment 3
 pushViewport(vp = viewport(layout.pos.row = 1910:2810, layout.pos.col = 1000:2675))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot2(km_CA_t3, row = 3, left = FALSE, atext = "CA Trim to 5 cm"))
+print(km.plot2(km.curve(comp = "warm", subs = 3, species = "CA", Data_Alt),
+               row = 3, left = FALSE, atext = "CA Trim to 5 cm"))
 popViewport()
 
 # Plot CA Treatment 4
 pushViewport(vp = viewport(layout.pos.row = 2875:3875, layout.pos.col = 1000:2675))
 par(fig = gridFIG())
 par(new = TRUE)
-print(km.plot2(km_CA_t4, row = 4, left = FALSE, atext = "CA Trim to Ground"))
+print(km.plot2(km.curve(comp = "warm", subs = 4, species = "CA", Data_Alt),
+               row = 4, left = FALSE, atext = "CA Trim to Ground"))
 popViewport()
 
 # Create legend

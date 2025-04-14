@@ -7,8 +7,8 @@ library(gridBase)
 library(lme4)
 library(lmerTest)
 library(survival)
-library(sjPlot)
-library(sjmisc)
+library(emmeans)
+library(vcd)
 library(xlsx)
 
 # Load data from local copy of datasheet
@@ -19,9 +19,9 @@ Data_TR <- read.xlsx("Data/ThistleData.xlsx", sheetName = "Trimming")
 
 
 
-##### Tidy data and calculate derived quantities ----------------------------------------------------------
+##### Combine general and trimming data -------------------------------------------------------------------
 
-# Drop redundant rows where plant is recorded as dead
+# Drop redundant rows  where plant is dead (and thus no data exist)
 Data_TR %>% drop_na(Height) -> Data_TR
 
 # Merge trimming data and general plot data
@@ -30,8 +30,56 @@ Data <- merge(Data_GE, Data_TR, by = c("Row", "Group", "Plant", "Species"))
 # Set Boolean warming indicator based on OTC presence
 Data %>% mutate(Warmed = case_when(is.na(OTC.On) == FALSE ~ 1, TRUE ~ 0)) -> Data
 
+# Add unique plot/plant identifiers for use in transforms, random effects, etc.
+Data$PlotID <- cumsum(!duplicated(Data[, 1:2]))
+Data$PlantID <- cumsum(!duplicated(Data[, 1:3]))
+
+# Re-order columns
+Data <- Data[, c(1:3, 22:23, 4, 13, 21, 6, 12, 15:19)]
+
+
+
+
+
+##### Transform data for survival analyses ----------------------------------------------------------------
+
+# Construct placeholder data frame
+# ToD is time of death; Cens is censor status (1 = dead, 0 = censored and survived until end)
+Data_Alt <- data.frame(matrix(ncol = 11, nrow = 0))
+names(Data_Alt) <- c("Row", "Group", "Plant", "PlotID", "PlantID", "Species", "Treatment",
+                     "Warmed", "DM_t", "ToD", "Cens")
+
+# Populate data frame
+for(i in 1:nrow(Data)){
+  if(i < nrow(Data)){
+    if(Data$Week[i] >= Data$Week[i + 1]){
+      Data_Alt[i, 1:10] <- Data[i, 1:10]}}
+  if(i == nrow(Data)){
+    Data_Alt[i, 1:10] <- Data[i, 1:10]}
+  if(Data$Week[i] == 65){Data_Alt[i, 11] <- 0} else {Data_Alt[i, 11] <- 1}}
+Data_Alt <- drop_na(Data_Alt, Row)
+
+# Fix data issue with single observation where time of death is listed as week zero
+# This is likely a data entry error and should be week one
+Data_Alt$ToD[Data_Alt$ToD == 0] <- 1
+
+# Split the survival data into 2 years (i.e. before and after winter gap at 30 weeks)
+# Within each year, survivors at end of year are censored
+# This data view will likely not be used in analyses
+Data_Alt_Y1 <- Data_Alt
+Data_Alt_Y1[Data_Alt_Y1$ToD >= 30, ]$ToD <- 30
+Data_Alt_Y1[Data_Alt_Y1$ToD == 30, ]$Cens <- 0
+Data_Alt_Y2 <- Data_Alt
+Data_Alt_Y2 <- Data_Alt_Y2[Data_Alt_Y2$ToD > 30, ]
+
+
+
+
+
+##### Transform data for height/stem models ---------------------------------------------------------------
+
 # Calculate regrowth since previous trim
-# For TRT 1 (control, no trim), simply use growth since last measurement
+# For TRT 1 (control, no trim), simply use height delta since last measurement
 # For TRTs 2 or 3, same as above if previous was uncut, or subtract cut height if previous was cut
 # For TRT 4, cut height is zero, so height is equal to growth
 Data$HGain <- rep(0, nrow(Data))
@@ -50,7 +98,7 @@ for(i in 1:length(1:nrow(Data))){
       if(Data$Height[i - 1] > 5){
         Data$HGain[i] <- Data$Height[i] - 5}}
     if(Data$Treatment[i] == 4){
-        Data$HGain[i] <- Data$Height[i]}}}
+      Data$HGain[i] <- Data$Height[i]}}}
 
 # Calculate stem gain since previous trim
 # Subtract new total stems from previous baseline (previous total minus stems trimmed)
@@ -65,77 +113,39 @@ for(i in 1:length(1:nrow(Data))){
     if(Data$Treatment[i] == 1){
       Data$SGain[i] <- Data$NStems[i] - Data$NStems[i - 1]}}}
 
-# Select columns used for analyses  
-Data %>% select(Row, Group, Plant, Species, Warmed, Treatment, DM_t, Week, Height,
-                HGain, Buds, Heads, NStems, SGain) -> Data
-
-# Construct concise representation of original dataset
-# ToD indicates time of death
-# Cens indicates censor status (1 = dead, 0 = censored and survived until end)
-Data_Alt <- data.frame(matrix(ncol = 9, nrow = 0))
-names(Data_Alt) <- c("Row", "Group", "Plant", "Species", "Warmed", "Treatment", "DM_t", "ToD", "Cens")
-for(i in 1:nrow(Data)){
-  if(i < nrow(Data)){
-    if(Data$Week[i] >= Data$Week[i + 1]){
-      Data_Alt[i, 1:8] <- Data[i, 1:8]}}
-  if(i == nrow(Data)){
-    Data_Alt[i, 1:8] <- Data[i, 1:8]}
-  if(Data$Week[i] == 65){Data_Alt[i, 9] <- 0} else {Data_Alt[i, 9] <- 1}}
-Data_Alt <- drop_na(Data_Alt, Row)
-
-# Fix data issue with single observation where time of death is listed as week zero
-# This is likely a data entry error and should be week one
-Data_Alt$ToD[Data_Alt$ToD == 0] <- 1
-
-# Same as above, but split into before and after winter census gap
-# Keeping this code just in case, but it is likely not necessary
-# 
-Data_Alt_1 <- data.frame(matrix(ncol = 9, nrow = 0))
-Data_Alt_2 <- Data_Alt_1
-names(Data_Alt_1) <- names(Data_Alt)
-names(Data_Alt_2) <- names(Data_Alt)
-Data_sub <- subset(Data, Week <= 30)
-for(i in 1:nrow(Data_sub)){
-  if(i < nrow(Data_sub)){
-    if(Data_sub$Week[i] >= Data_sub$Week[i + 1]){
-      Data_Alt_1[i, 1:8] <- Data_sub[i, 1:8]}}
-  if(i == nrow(Data_sub)){
-    Data_Alt_1[i, 1:8] <- Data_sub[i, 1:8]}
-  if(Data_sub$Week[i] == 30){Data_Alt_1[i, 9] <- 0} else {Data_Alt_1[i, 9] <- 1}}
-Data_sub <- subset(Data, Week >= 50)
-for(i in 1:nrow(Data_sub)){
-  if(i < nrow(Data_sub)){
-    if(Data_sub$Week[i] >= Data_sub$Week[i + 1]){
-      Data_Alt_2[i, 1:8] <- Data_sub[i, 1:8]}}
-  if(i == nrow(Data_sub)){
-    Data_Alt_2[i, 1:8] <- Data_sub[i, 1:8]}
-  if(Data_sub$Week[i] == 50){Data_Alt_2[i, 9] <- 0} else {Data_Alt_2[i, 9] <- 1}}
-Data_Alt_1 <- drop_na(Data_Alt_1, Row)
-Data_Alt_2 <- drop_na(Data_Alt_2, Row)
-
-# Construct dataframe for use in growth model, with time-averaged regrowth
+# Create dataframe of summary measures for each plant
+# Then add Boolean indicators for whether or not plant budded and flowered
 Data %>% 
-  mutate(Clust = paste0(Row, Group)) %>%
-  group_by(Clust, Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
-  summarise(HGain = mean(HGain),
-            SGain = mean(SGain)) -> Data_TA
+  group_by(PlantID) %>% 
+  summarise(AvgHGain = mean(HGain),    # Average weekly height change (cm)
+            AvgSGain = mean(SGain),    # Average weekly stem count change
+            MaxHGain = max(HGain),     # Maximum weekly height change (cm)
+            MaxSGain = max(SGain),     # Maximum weekly stem count change
+            MaxH = max(Height),        # Maximum height observed (cm)
+            MaxS = max(NStems),        # Maximum stem count observed
+            MaxHeads = max(Heads),     # Maximum flower count observed
+            MaxBuds = max(Buds)) -> Data_Sum
+Data_Sum <- merge(unique(Data[, 1:9]), Data_Sum, by = "PlantID")
+Data_Sum$Flowered <- ifelse(Data_Sum$MaxHeads > 0, 1, 0)
+Data_Sum$Budded <- ifelse(Data_Sum$MaxBuds > 0, 1, 0)
 
-# Construct dataframe for use in reproduction model
-Data %>% 
-  mutate(Clust = paste0(Row, Group)) %>%
-  group_by(Clust, Row, Group, Plant, Species, Warmed, Treatment, DM_t) %>% 
-  summarise(Buds = max(Buds),
-            Heads = max(Heads),
-            Total = Buds + Heads) -> Data_R
-
-# Remove temporary variables since they will no longer be used
-remove(i, ns_prev, Data_sub)
+# Remove unused/temp variables
+remove(i, ns_prev)
 
 
 
 
 
 ##### Set up plotting functions ---------------------------------------------------------------------------
+
+# Function to package survival data in a form that can be easily plotted
+km.curve <- function(comp, subs, species, data){
+  if(comp == "trim"){
+    return(survfit(Surv(ToD, Cens) ~ factor(Treatment), type = "kaplan-meier",
+                  data = subset(data, Species == species & Warmed == subs)))}
+  if(comp == "warm"){
+    return(survfit(Surv(ToD, Cens) ~ factor(Warmed), type = "kaplan-meier",
+                  data = subset(data, Species == species & Treatment == subs)))}}
 
 # Function to plot survival curves comparing trimming treatments
 km.plot <- function(km_mod, bottom, left, atext){
@@ -212,4 +222,14 @@ km.plot2 <- function(km_mod, row, left, atext){
     axis(1, at = seq(0, 65, by = 5), mgp = c(0.2, -0.3, 0))
     mtext(side = 1, line = 0.20, "Weeks", cex = 0.5)
     text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}}
+
+# Function to (crudely) plot demographic data for prelim analyses
+dd.plot <- function(data, yvar, fac, type, xlim){
+  if(type == "hist"){
+    gplot <- ggplot(data, aes(.data[[yvar]], fill = factor(.data[[fac]]))) +
+      geom_histogram(binwidth = 1) + xlim(xlim[1], xlim[2])}
+  if(type == "dens"){
+    gplot <- ggplot(data, aes(.data[[yvar]], colour = factor(.data[[fac]]))) +
+      geom_density(size = 1.2) + xlim(xlim[1], xlim[2])}
+  return(gplot)}
 
