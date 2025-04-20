@@ -9,6 +9,7 @@ library(lmerTest)
 library(survival)
 library(emmeans)
 library(vcd)
+library(coxme)
 library(xlsx)
 
 # Load data from local copy of datasheet

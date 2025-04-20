@@ -1,83 +1,3 @@
-##### Fit survival regressions ----------------------------------------------------------------------------
-
-# Note: interactions excluded as statistical power is insufficient due to small sample size
-# Using Cox model since we don't need to predict outside of observation period
-# Plus, unlike survreg, Cox supports random effects
-
-# Fit survival model, using initial diameter as covariate [CN]
-Surv1_CN <- coxph(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + scale(DM_t) +
-                    frailty(PlotID, "gaussian"),
-                  data = subset(Data_Alt, Species == "CN"))
-
-# View model results
-Surv1_CN
-
-# Rosette diameter not useful as a covariate; drop and re-fit model
-Surv2_CN <- coxph(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + frailty(PlotID, "gaussian"),
-                  data = subset(Data_Alt, Species == "CN"))
-
-# View new model results
-# High concordance and significant p-value for LRT indicate good model fit
-Surv2_CN; summary(Surv2_CN)
-
-# View other model diagnostics
-# No clear +/- trend in Schoenfeld residuals for factors, indicating approximately proportional hazard
-# While both factor p-values are significant, it's likely just from the high/low blips in last few weeks
-# This is probably fine given that hazard is proportional over most of the trimming time
-# Global test fails to reject null hypothesis of proportional hazards for model as a whole
-plot(cox.zph(Surv2_CN))
-cox.zph(Surv2_CN)
-
-# Fit survival model, using initial diameter as covariate [CA]
-Surv1_CA <- coxph(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + scale(DM_t) +
-                    frailty(PlotID, "gaussian"),
-                  data = subset(Data_Alt, Species == "CA"))
-
-# View model results
-Surv1_CA
-
-# Rosette diameter not useful as a covariate; drop and re-fit model
-Surv2_CA <- coxph(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + frailty(PlotID, "gaussian"),
-                  data = subset(Data_Alt, Species == "CA"))
-
-# View new model results
-# High concordance and significant p-value for LRT indicate good model fit
-Surv2_CA; summary(Surv2_CA)
-
-# View other model diagnostics
-# No clear +/- trend in Schoenfeld residuals for factors, indicating approximately proportional hazard
-# While TRT factor p-values are significant, it's likely just from the high/low blips in last few weeks
-# This is probably fine given that hazard is proportional over most of the trimming time
-# Global test fails to reject null hypothesis of proportional hazards for model as a whole
-plot(cox.zph(Surv2_CA))
-cox.zph(Surv2_CA)
-
-
-
-
-
-Surv1_CN <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + scale(DM_t) + factor(PlotID),
-                   data = subset(Data_Alt, Species == "CN"))
-summary(Surv1_CN)
-
-Surv1_CN <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + factor(PlotID),
-                    data = subset(Data_Alt, Species == "CN"))
-summary(Surv1_CN)
-
-
-
-Surv1_CA <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + scale(DM_t) + factor(PlotID),
-                    data = subset(Data_Alt, Species == "CA"))
-summary(Surv1_CA)
-
-Surv1_CA <- survreg(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + factor(PlotID),
-                    data = subset(Data_Alt, Species == "CA"))
-summary(Surv1_CA)
-
-
-
-
-
 ##### Fit budding probability models ----------------------------------------------------------------------
 
 # Select data for flowering probability analysis
@@ -169,7 +89,7 @@ dd.plot(Data_Temp_CN, "MaxBuds", "Treatment", "dens", c(0, 15))
 dd.plot(Data_Temp_CN, "MaxBuds", "Warmed", "hist", c(0, 15))
 dd.plot(Data_Temp_CN, "MaxBuds", "Warmed", "dens", c(0, 15))
 
-# For CN model max bud count as function of trimming and warming treatments
+# For CN, model max bud count as function of trimming and warming treatments
 Mod_Buds1_CN <- lmer(Mod_Form1, data = Data_Temp_CN)
 summary(Mod_Buds1_CN)
 
@@ -519,4 +439,97 @@ pairs(emmeans(Mod_SMax3_CA, "Treatment"))
 
 # Remove intermediate models that are no longer used
 remove(temp1, temp2, Mod_SMax1_CN, Mod_SMax2_CN, Mod_SMax1_CA, Mod_SMax2_CA)
+
+
+
+
+
+##### Fit survival regressions ----------------------------------------------------------------------------
+
+# Select data for flowering probability analysis
+Data_Temp_CN_Y1 <- subset(Data_Alt_Y1, Species == "CN")
+Data_Temp_CA_Y1 <- subset(Data_Alt_Y1, Species == "CA")
+Data_Temp_CN_Y2 <- subset(Data_Alt_Y2, Species == "CN")
+Data_Temp_CA_Y2 <- subset(Data_Alt_Y2, Species == "CA")
+
+# For CN (Year 1), create tables of number of individuals that survived
+# Break data out by trimming, warming, and trimming x warming
+table(Data_Temp_CN_Y1$Treatment, Data_Temp_CN_Y1$Cens)
+table(Data_Temp_CN_Y1$Warmed, Data_Temp_CN_Y1$Cens)
+table(Data_Temp_CN_Y1$Treatment, Data_Temp_CN_Y1$Cens, Data_Temp_CN_Y1$Warmed)
+
+# For CN (Year 1), model hazard as function of trimming and warming treatments
+# 2 out of 60 individuals survived until end of trimming season
+Mod_Surv1_CN <- coxme(Surv(ToD, Cens) ~ factor(Warmed)*factor(Treatment) + (1|PlotID),
+                      data = subset(Data_Alt_Y1, Species == "CN"))
+
+# Fit the same model above, but without interaction effect
+Mod_Surv2_CN <- coxme(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + (1|PlotID),
+                      data = subset(Data_Alt_Y1, Species == "CN"))
+
+# Examine model outputs
+summary(Mod_Surv1_CN)
+summary(Mod_Surv2_CN)
+
+# Interaction term is not significant, so drop it
+anova(Mod_Surv2_CN, Mod_Surv1_CN)
+
+# Examine diagnostics of full model
+# Note: hazard for treatment is mostly constant, but decreases near the end
+# This is what is likely driving a significant value here for treatment
+# Not a cause for concern
+cox.zph(Mod_Surv2_CN)
+plot(cox.zph(Mod_Surv2_CN))
+
+# For CA (Year 1), create tables of number of individuals that survived
+# Break data out by trimming, warming, and trimming x warming
+table(Data_Temp_CA_Y1$Treatment, Data_Temp_CA_Y1$Cens)
+table(Data_Temp_CA_Y1$Warmed, Data_Temp_CA_Y1$Cens)
+table(Data_Temp_CA_Y1$Treatment, Data_Temp_CA_Y1$Cens, Data_Temp_CA_Y1$Warmed)
+
+# For CA (Year 1), model hazard as function of trimming and warming treatments
+# 23 out of 60 individuals survived until end of trimming season
+Mod_Surv1_CA <- coxme(Surv(ToD, Cens) ~ factor(Warmed)*factor(Treatment) + (1|PlotID),
+                      data = subset(Data_Alt_Y1, Species == "CA"))
+
+# Fit the same model above, but without interaction effect
+Mod_Surv2_CA <- coxme(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + (1|PlotID),
+                      data = subset(Data_Alt_Y1, Species == "CA"))
+
+# Examine model outputs
+summary(Mod_Surv1_CA)
+summary(Mod_Surv2_CA)
+
+# Interaction term is significant, so keep it
+anova(Mod_Surv2_CA, Mod_Surv1_CA)
+
+# Examine diagnostics of reduced model; looks good
+cox.zph(Mod_Surv1_CA)
+plot(cox.zph(Mod_Surv1_CA))
+
+# For CA (Year 2), create tables of number of individuals that survived
+# Break data out by trimming, warming, and trimming x warming
+table(Data_Temp_CA_Y2$Treatment, Data_Temp_CA_Y2$Cens)
+table(Data_Temp_CA_Y2$Warmed, Data_Temp_CA_Y2$Cens)
+table(Data_Temp_CA_Y2$Treatment, Data_Temp_CA_Y2$Cens, Data_Temp_CA_Y2$Warmed)
+
+# For CA (Year 2), model hazard as function of trimming and warming treatments
+# 3 out of 19 individuals survived until end of trimming season
+Mod_Surv3_CA <- coxme(Surv(ToD, Cens) ~ factor(Warmed)*factor(Treatment) + (1|PlotID),
+                      data = subset(Data_Alt_Y2, Species == "CA"))
+
+# Fit the same model above, but without interaction effect
+Mod_Surv4_CA <- coxme(Surv(ToD, Cens) ~ factor(Warmed) + factor(Treatment) + (1|PlotID),
+                      data = subset(Data_Alt_Y2, Species == "CA"))
+
+# Examine model outputs
+summary(Mod_Surv3_CA)
+summary(Mod_Surv4_CA)
+
+# Interaction term is not significant, so drop it
+anova(Mod_Surv4_CA, Mod_Surv3_CA)
+
+# Examine diagnostics of reduced model; looks good
+cox.zph(Mod_Surv2_CA)
+plot(cox.zph(Mod_Surv2_CA))
 
