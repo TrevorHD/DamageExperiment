@@ -149,80 +149,117 @@ km.curve <- function(comp, subs, species, data){
                   data = subset(data, Species == species & Treatment == subs)))}}
 
 # Function to plot survival curves comparing trimming treatments
-km.plot <- function(km_mod, bottom, left, atext){
+km.plot <- function(km_mod, bottom, colm, atext){
   ltypes <- c("solid", "3333", "2323", "1212")
-  colours <- c("black", "purple", "green", "orange")
+  colours <- c("green4", "olivedrab3", "gold", "orange")
   par(cex.axis = 0.38, cex.lab = 0.5, tcl = -0.15)
-  if(bottom == FALSE & left == TRUE){
+  if(bottom == FALSE & colm == "left"){
     par(mar = c(0, 1, 0.15, 0.1))
-    plot(km_mod, xlim = c(0, 30), yaxt = "n", xaxt = "n",
+    plot(km_mod, xlim = c(0, 30), ylim = c(0, 1), yaxt = "n", xaxt = "n",
          mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
     axis(2, at = seq(0, 1, by = 0.2), mgp = c(0.5, 0.05, 0))
     mtext(side = 2, line = 0.53, "Probability of Survival", cex = 0.5)
     text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
-  if(bottom == TRUE & left == TRUE){
+  if(bottom == TRUE & colm == "left"){
     par(mar = c(1, 1, 0, 0.1))
-    plot(km_mod, xlim = c(0, 30), yaxt = "n", xlab = "Weeks", 
+    plot(km_mod, xlim = c(0, 30), ylim = c(0, 1), yaxt = "n", xaxt = "n", 
          mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
+    axis(1, at = seq(0, 30, by = 5), mgp = c(0.2, -0.3, 0))
     axis(2, at = seq(0, 1, by = 0.2), mgp = c(0.5, 0.05, 0))
+    mtext(side = 1, line = 0.20, "Week (Y1)", cex = 0.5)
     mtext(side = 2, line = 0.53, "Probability of Survival", cex = 0.5)
     text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
-  if(bottom == FALSE & left == FALSE){
+  if(bottom == FALSE & colm == "middle"){
+    par(mar = c(0, 0.1, 0.15, 0.1))
+    plot(km_mod, xlim = c(0, 30), ylim = c(0, 1), xaxt = "n", yaxt = "n",
+         lwd = 1.1, lty = ltypes, col = colours)
+    text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(bottom == TRUE & colm == "middle"){
+    par(mar = c(1, 0.1, 0, 0.1))
+    plot(km_mod, xlim = c(0, 30), ylim = c(0, 1), xaxt = "n", yaxt = "n",
+         lwd = 1.1, lty = ltypes, col = colours)
+    axis(1, at = seq(0, 30, by = 5), mgp = c(0.2, -0.3, 0))
+    mtext(side = 1, line = 0.20, "Week (Y1)", cex = 0.5)
+    text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(bottom == FALSE & colm == "right"){
     par(mar = c(0, 0.1, 0.15, 0.3))
-    plot(km_mod, xaxt = "n", yaxt = "n",
+    plot(km_mod, xlim = c(50, 65), ylim = c(0, 1), xaxt = "n", yaxt = "n",
          lwd = 1.1, lty = ltypes, col = colours)
-    text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}
-  if(bottom == TRUE & left == FALSE){
+    text(x = 65, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(bottom == TRUE & colm == "right"){
     par(mar = c(1, 0.1, 0, 0.3))
-    plot(km_mod, xaxt = "n", yaxt = "n",
+    plot(km_mod, xlim = c(50, 65), ylim = c(0, 1), xaxt = "n", yaxt = "n",
          lwd = 1.1, lty = ltypes, col = colours)
-    axis(1, at = seq(0, 65, by = 5), mgp = c(0.2, -0.3, 0))
-    mtext(side = 1, line = 0.20, "Weeks", cex = 0.5)
-    text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}}
+    axis(1, at = seq(50, 65, by = 5), mgp = c(0.2, -0.3, 0))
+    mtext(side = 1, line = 0.20, "Week (Y2)", cex = 0.5)
+    text(x = 65, y = 0.98, atext, adj = 1, cex = 0.39)}}
 
 # Function to plot survival curves comparing warming treatments
-km.plot2 <- function(km_mod, row, left, atext){
-  ltypes <- c("solid", "3333")
+km.plot2 <- function(km_mod, row, colm, atext, blank = NULL){
+  ltypes <- c("solid", "1212")
   colours <- c("blue", "red")
   par(cex.axis = 0.38, cex.lab = 0.5, tcl = -0.15)
-  if(row == 1 & left == TRUE){
+  if(row == 1 & colm == "left"){
     par(mar = c(0, 1, 0.15, 0.1))
-    plot(km_mod, xlim = c(0, 30), yaxt = "n", xaxt = "n",
+    plot(km_mod, xlim = c(0, 30), ylim = c(0, 1), yaxt = "n", xaxt = "n",
          mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
     axis(2, at = seq(0, 1, by = 0.2), mgp = c(0.5, 0.05, 0))
     mtext(side = 2, line = 0.53, "Probability of Survival", cex = 0.5)
     text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
-  if((row == 2 | row == 3) & left == TRUE){
+  if((row == 2 | row == 3) & colm == "left"){
     par(mar = c(0, 1, 0.15, 0.1))
-    plot(km_mod, xlim = c(0, 30), yaxt = "n", xaxt = "n",
+    plot(km_mod, xlim = c(0, 30), ylim = c(0, 1), yaxt = "n", xaxt = "n",
          mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
     axis(2, at = seq(0, 1, by = 0.2), mgp = c(0.5, 0.05, 0))
     mtext(side = 2, line = 0.53, "Probability of Survival", cex = 0.5)
     text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
-  if(row == 4 & left == TRUE){
+  if(row == 4 & colm == "left"){
     par(mar = c(1, 1, 0, 0.1))
-    plot(km_mod, xlim = c(0, 30), yaxt = "n", xlab = "Weeks", 
+    plot(km_mod, xlim = c(0, 30), ylim = c(0, 1), yaxt = "n", xaxt = "n", 
          mgp = c(0.2, -0.3, 0), lwd = 1.1, lty = ltypes, col = colours)
+    axis(1, at = seq(0, 30, by = 5), mgp = c(0.2, -0.3, 0))
     axis(2, at = seq(0, 1, by = 0.2), mgp = c(0.5, 0.05, 0))
+    mtext(side = 1, line = 0.20, "Week (Y1)", cex = 0.5)
     mtext(side = 2, line = 0.53, "Probability of Survival", cex = 0.5)
     text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
-  if(row == 1 & left == FALSE){
-    par(mar = c(0, 0.1, 0.15, 0.3))
-    plot(km_mod, xaxt = "n", yaxt = "n",
+  if(row == 1 & colm == "middle"){
+    par(mar = c(0, 0.1, 0.15, 0.1))
+    plot(km_mod, xlim = c(0, 30), ylim = c(0, 1), xaxt = "n", yaxt = "n",
          lwd = 1.1, lty = ltypes, col = colours)
-    text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}
-  if((row == 2 | row == 3) & left == FALSE){
-    par(mar = c(0, 0.1, 0.15, 0.3))
-    plot(km_mod, xaxt = "n", yaxt = "n",
+    text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if((row == 2 | row == 3) & colm == "middle"){
+    par(mar = c(0, 0.1, 0.15, 0.1))
+    plot(km_mod, xlim = c(0, 30), ylim = c(0, 1), xaxt = "n", yaxt = "n",
          lwd = 1.1, lty = ltypes, col = colours)
-    text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}
-  if(row == 4 & left == FALSE){
+    text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(row == 4 & colm == "middle"){
+    par(mar = c(1, 0.1, 0, 0.1))
+    plot(km_mod, xlim = c(0, 30), ylim = c(0, 1), xaxt = "n", yaxt = "n",
+         lwd = 1.1, lty = ltypes, col = colours)
+    axis(1, at = seq(0, 30, by = 5), mgp = c(0.2, -0.3, 0))
+    mtext(side = 1, line = 0.20, "Week (Y1)", cex = 0.5)
+    text(x = 30, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(row == 1 & colm == "right"){
+    par(mar = c(0, 0.1, 0.15, 0.3))
+    plot(km_mod, xlim = c(50, 65), ylim = c(0, 1), xaxt = "n", yaxt = "n",
+         lwd = 1.1, lty = ltypes, col = colours)
+    text(x = 65, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if((row == 2 | row == 3) & colm == "right"){
+    par(mar = c(0, 0.1, 0.15, 0.3))
+    plot(km_mod, xlim = c(50, 65), ylim = c(0, 1), xaxt = "n", yaxt = "n",
+         lwd = 1.1, lty = ltypes, col = colours)
+    text(x = 65, y = 0.98, atext, adj = 1, cex = 0.39)}
+  if(row == 4 & colm == "right"){
     par(mar = c(1, 0.1, 0, 0.3))
-    plot(km_mod, xaxt = "n", yaxt = "n", xlim = c(0, 65),
-         lwd = 1.1, lty = ltypes, col = colours)
-    axis(1, at = seq(0, 65, by = 5), mgp = c(0.2, -0.3, 0))
-    mtext(side = 1, line = 0.20, "Weeks", cex = 0.5)
-    text(x = 66.2, y = 0.98, atext, adj = 1, cex = 0.39)}}
+    if(blank == TRUE){
+      plot(-1, xlim = c(50, 65), ylim = c(0, 1), xaxt = "n", yaxt = "n",
+           lwd = 1.1, lty = ltypes, col = colours)}
+    if(blank != TRUE){
+      plot(km_mod, xlim = c(50, 65), ylim = c(0, 1), xaxt = "n", yaxt = "n",
+           lwd = 1.1, lty = ltypes, col = colours)}
+    axis(1, at = seq(50, 65, by = 5), mgp = c(0.2, -0.3, 0))
+    mtext(side = 1, line = 0.20, "Week (Y2)", cex = 0.5)
+    text(x = 65, y = 0.98, atext, adj = 1, cex = 0.39)}}
 
 # Function to (crudely) plot demographic data for prelim analyses
 dd.plot <- function(data, yvar, fac, type, xlim){
