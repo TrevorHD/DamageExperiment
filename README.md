@@ -30,7 +30,9 @@ Invasive species are often disturbance-adapted; this includes not only natural d
 
 ## Other
 
-**DamageExperimentMS_v6_EcologicalApp** *(.docx)* - Latest version of the manuscript for this research, submitted to *Ecological Applications*.
+**DamageExperimentMS_v6_JEcolApp** *(.docx)* - Latest version of the manuscript for this research, submitted to *Journal of Applied Ecology*.
 
-**DamageExperimentMS_v6_EcologicalApp_Appendix_S1** *(.docx)* - Supplemental material containing detailed methods for the demographic models and survival analyses.
+**DamageExperimentMS_v6_JEcolApp_Appendix_S1** *(.docx)* - Supplemental material containing detailed methods for the demographic models and survival analyses.
+
+**DamageExperimentMS_v6_JEcolApp_TitlePage** *(.docx)* - Title page for the manuscript with authors, affiliations, article/journal info, etc.
 
