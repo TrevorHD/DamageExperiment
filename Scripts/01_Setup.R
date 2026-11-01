@@ -11,6 +11,10 @@ library(emmeans)
 library(vcd)
 library(coxme)
 library(xlsx)
+library(logistf)
+
+# Set working directory
+setwd("~/GitHub/DamageExperiment")
 
 # Load data from local copy of datasheet
 Data_GE <- read.xlsx("Data/ThistleData.xlsx", sheetName = "General")
