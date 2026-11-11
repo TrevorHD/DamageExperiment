@@ -192,7 +192,7 @@ data.frame("Fitted" = fitted(Mod_Buds2_CN), "Resid" = resid(Mod_Buds2_CN),
 
 # Before potentially dropping interactions, test for warming effects within treatments
 # No difference between warmed and unwarmed groups within any treatment
-pairs(emmeans(Mod_Buds2_CN, ~ Warmed | Treatment))
+pairs(emmeans(Mod_Buds2_CN, ~ Warmed | Treatment), reverse = TRUE)
 
 # Fit model without interaction term; interaction term is not significant, so drop it
 Mod_Buds3_CN <- lmer(Mod_Form3, data = Data_Temp_CN)
@@ -253,7 +253,7 @@ data.frame("Fitted" = fitted(Mod_Buds2_CA), "Resid" = resid(Mod_Buds2_CA),
 
 # Before potentially dropping interactions, test for warming effects within treatments
 # No difference between warmed and unwarmed groups within any treatment
-pairs(emmeans(Mod_Buds2_CA, ~ Warmed | Treatment))
+pairs(emmeans(Mod_Buds2_CA, ~ Warmed | Treatment), reverse = TRUE)
 
 # Fit model without interaction term; interaction term is not significant, so drop it
 Mod_Buds3_CA <- lmer(Mod_Form3, data = Data_Temp_CA)
@@ -348,7 +348,7 @@ data.frame("Fitted" = fitted(Mod_HMax2_CN), "Resid" = resid(Mod_HMax2_CN),
 
 # Before potentially dropping interactions, test for warming effects within treatments
 # Significant difference between warmed and unwarmed groups within some treatments
-pairs(emmeans(Mod_HMax2_CN, ~ Warmed | Treatment))
+pairs(emmeans(Mod_HMax2_CN, ~ Warmed | Treatment), reverse = TRUE)
 
 # Fit model without interaction term; interaction term is not significant, so drop it
 Mod_HMax3_CN <- lmer(Mod_Form3, data = Data_Temp_CN)
@@ -412,7 +412,7 @@ data.frame("Fitted" = fitted(Mod_HMax2_CA), "Resid" = resid(Mod_HMax2_CA),
 
 # Before potentially dropping interactions, test for warming effects within treatments
 # Significant difference between warmed and unwarmed groups within some treatments
-pairs(emmeans(Mod_HMax2_CA, ~ Warmed | Treatment))
+pairs(emmeans(Mod_HMax2_CA, ~ Warmed | Treatment), reverse = TRUE)
 
 # Fit model without interaction term; interaction term is not significant, so drop it
 Mod_HMax3_CA <- lmer(Mod_Form3, data = Data_Temp_CA)
@@ -506,7 +506,7 @@ data.frame("Fitted" = fitted(Mod_SMax2_CN), "Resid" = resid(Mod_SMax2_CN),
 
 # Before potentially dropping interactions, test for warming effects within treatments
 # No difference between warmed and unwarmed groups within any treatment
-pairs(emmeans(Mod_SMax2_CN, ~ Warmed | Treatment))
+pairs(emmeans(Mod_SMax2_CN, ~ Warmed | Treatment), reverse = TRUE)
 
 # Fit model without interaction term; interaction term is not significant, so drop it
 Mod_SMax3_CN <- lmer(Mod_Form3, data = Data_Temp_CN)
@@ -568,7 +568,7 @@ data.frame("Fitted" = fitted(Mod_SMax2_CA), "Resid" = resid(Mod_SMax2_CA),
 
 # Before potentially dropping interactions, test for warming effects within treatments
 # No difference between warmed and unwarmed groups within any treatment
-pairs(emmeans(Mod_SMax2_CA, ~ Warmed | Treatment))
+pairs(emmeans(Mod_SMax2_CA, ~ Warmed | Treatment), reverse = TRUE)
 
 # Fit model without interaction term; interaction term is not significant, so drop it
 Mod_SMax3_CA <- lmer(Mod_Form3, data = Data_Temp_CA)
