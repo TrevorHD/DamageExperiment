@@ -210,7 +210,7 @@ data.frame("Fitted" = fitted(Mod_Buds3_CN), "Resid" = resid(Mod_Buds3_CN),
 
 # Test for any significant differences between trimming treatments
 # Trimming treatments significantly different from control, but not from each other
-pairs(emmeans(Mod_Buds3_CN, "Treatment"))
+pairs(emmeans(Mod_Buds3_CN, "Treatment"), reverse = TRUE)
 
 # Fit model without rosette size; rosette size is significant, so keep it
 Mod_Buds4_CN <- lmer(Mod_Form4, data = Data_Temp_CN)
@@ -285,7 +285,7 @@ data.frame("Fitted" = fitted(Mod_Buds4_CA), "Resid" = resid(Mod_Buds4_CA),
 
 # Test for any significant differences between trimming treatments
 # Trimming treatments significantly different from control, but not from each other
-pairs(emmeans(Mod_Buds4_CA, "Treatment"))
+pairs(emmeans(Mod_Buds4_CA, "Treatment"), reverse = TRUE)
 
 # Note: all residual plots above will show banding patterns due to discrete nature of data
 # Boundary effects also visible on bottom left of plots since log(y) cannot be less than zero
@@ -367,7 +367,7 @@ data.frame("Fitted" = fitted(Mod_HMax3_CN), "Resid" = resid(Mod_HMax3_CN),
 # Test for any significant differences between trimming treatments
 # Trimming treatments significantly different from control, but not from each other
 # Difference between 10 cm and 5 cm trims is significant, though
-pairs(emmeans(Mod_HMax3_CN, "Treatment"))
+pairs(emmeans(Mod_HMax3_CN, "Treatment"), reverse = TRUE)
 
 # Fit model without rosette size; rosette size is significant, so keep it
 Mod_HMax4_CN <- lmer(Mod_Form4, data = Data_Temp_CN)
@@ -447,7 +447,7 @@ data.frame("Fitted" = fitted(Mod_HMax4_CA), "Resid" = resid(Mod_HMax4_CA),
 # Test for any significant differences between trimming treatments
 # Trimming treatments significantly different from control, but not from each other
 # Difference between 10 cm and 0 cm trims is significant, though
-pairs(emmeans(Mod_HMax4_CA, "Treatment"))
+pairs(emmeans(Mod_HMax4_CA, "Treatment"), reverse = TRUE)
 
 # Remove temporary variables that are no longer needed
 remove(Data_Temp_CN, Data_Temp_CA, Mod_Form1, Mod_Form2, Mod_Form3, Mod_Form4,
@@ -525,7 +525,7 @@ data.frame("Fitted" = fitted(Mod_SMax3_CN), "Resid" = resid(Mod_SMax3_CN),
 
 # Test for any significant differences between trimming treatments
 # Trimming treatments significantly different from control, but not from each other
-pairs(emmeans(Mod_SMax3_CN, "Treatment"))
+pairs(emmeans(Mod_SMax3_CN, "Treatment"), reverse = TRUE)
 
 # Fit model without rosette size; rosette size is significant, so keep it
 Mod_SMax4_CN <- lmer(Mod_Form4, data = Data_Temp_CN)
@@ -601,7 +601,7 @@ data.frame("Fitted" = fitted(Mod_SMax4_CA), "Resid" = resid(Mod_SMax4_CA),
 # Test for any significant differences between trimming treatments
 # Trimming treatments significantly different from control, but not from each other
 # Difference between 5 cm and 0 cm trims is significant, though
-pairs(emmeans(Mod_SMax4_CA, "Treatment"))
+pairs(emmeans(Mod_SMax4_CA, "Treatment"), reverse = TRUE)
 
 # Note: all residual plots above will show banding patterns due to discrete nature of data
 # Boundary effects also visible on bottom left of plots since log(y) cannot be less than zero
